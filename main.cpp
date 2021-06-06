@@ -33,18 +33,13 @@ const DWORD getAttr(LPBYTE* txt, DWORD* size, SCARDHANDLE* handle, ULONG type) {
     return res;
 };
 
-int main() {
-
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLine, int nShowCmd) {
 
     //loop card discern
     long long runTimeCnt(0);
 
-    LPBYTE readerSystemName(nullptr);
-    DWORD readerSystemNameSize(0);
-
     //card reader system name list
     char _initReaderListFileName[] = "_reader_name.txt";
-
 
 
     //init reader list file
@@ -80,6 +75,16 @@ int main() {
 
     int readerSuccessIndex(-1);
 
+    //설립
+    SCARDCONTEXT    hSC;
+    LONG            lSCardContextRes;
+    lSCardContextRes = SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &hSC);
+
+    //리더기 카드 연결
+    SCARDHANDLE hSCardConnect;
+    LONG lSCardConnectionRes;
+    DWORD dlCardReaderProtocolRes;
+
     //run loop
     while(true) {
 
@@ -87,11 +92,6 @@ int main() {
         std::cout << std::endl << std::endl;
 
         ++runTimeCnt;
-
-        //설립
-        SCARDCONTEXT    hSC;
-        LONG            lSCardContextRes;
-        lSCardContextRes = SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &hSC);
 
         //리더기 확인
         if (lSCardContextRes == SCARD_S_SUCCESS) {
@@ -112,10 +112,7 @@ int main() {
                 //string casting
                 std::string t = *listIter;
 
-                //리더기 카드 연결
-                SCARDHANDLE hSCardConnect;
-                LONG lSCardConnectionRes;
-                DWORD dlCardReaderProtocolRes;
+
 
                 lSCardConnectionRes = SCardConnectA(hSC, t.c_str(), SCARD_SHARE_SHARED,
                                                     SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1, &hSCardConnect,
@@ -182,11 +179,17 @@ int main() {
                     //정리
                     SCardFreeMemory(hSC, _readerSystemName);
                     SCardFreeMemory(hSC, _readerSerialNo);
+                    SCardFreeMemory(hSC, _readerBWT);
+                    SCardFreeMemory(hSC, _readerFriendlyName);
+                    SCardFreeMemory(hSC, _readerVendorIFDType);
+                    SCardFreeMemory(hSC, _readerChannelID);
 
                     //종료
                     std::cout << "- is over" << '\n';
                     FN_SLEEP(3000);
+
                     system("PAUSE");
+
                     return 0;
 
                 } else {
@@ -201,13 +204,15 @@ int main() {
             std::cout << "failed [0]" << '\n';
         };
 
-        DWORD clearRes = SCardFreeMemory( hSC, readerSystemName );
+
         std::cout << "waiting.." << '\n';
 
 
-        FN_SLEEP(1000);
+        //FN_SLEEP(2000);
+        Sleep(2525);
+
         //exit condition
-        if (runTimeCnt == 100)
+        if (runTimeCnt == 100000000)
             break;
     };
 

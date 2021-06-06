@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="SshConsoleOptionsProvider">
+    <option name="myEncoding" value="x-windows-949" />
+    <option name="myConnectionType" value="NONE" />
+    <option name="myConnectionId" value="" />
+  </component>
+</project>
