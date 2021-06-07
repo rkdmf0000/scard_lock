@@ -107,7 +107,10 @@ void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
     std::cout << "- is over" << '\n';
     FN_SLEEP(3000);
 
+
+    //순전히 디버그용
     system("PAUSE");
+
     exit(0);
 };
 
