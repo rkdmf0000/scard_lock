@@ -1,6 +1,10 @@
+
+//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <windows.h>
 #include <winscard.h>
 
 
@@ -34,6 +38,9 @@ const DWORD getAttr(LPBYTE* txt, DWORD* size, SCARDHANDLE* handle, ULONG type) {
 };
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLine, int nShowCmd) {
+
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
 
     //loop card discern
     long long runTimeCnt(0);
@@ -78,6 +85,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
     //설립
     SCARDCONTEXT    hSC;
     LONG            lSCardContextRes;
+
     lSCardContextRes = SCardEstablishContext(SCARD_SCOPE_USER, NULL, NULL, &hSC);
 
     //리더기 카드 연결
@@ -95,7 +103,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
 
         //리더기 확인
         if (lSCardContextRes == SCARD_S_SUCCESS) {
-            std::cout << "Establish complete" << '\n';
 
             unsigned int listIdx(0);
             std::vector<std::string>::iterator listIter;
@@ -118,10 +125,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
                                                     SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1, &hSCardConnect,
                                                     &dlCardReaderProtocolRes);
 
+                switch(lSCardConnectionRes) {
+                    case SCARD_S_SUCCESS:
+                    case SCARD_W_REMOVED_CARD:
+                        readerSuccessIndex = listIdx;
+                        break;
+                    case SCARD_E_UNKNOWN_READER:
+                        std::cout << "[ Unknown Reader Name ]" << '\n';
+                        break;
+                    default:
+                        std::cout << "[ Undefined return value! ] : " << std::hex << (CONST DWORD)lSCardConnectionRes << '\n';
+                        break;
+                };
                 if (lSCardConnectionRes == SCARD_S_SUCCESS) {
-
-                    //어느 위치가 성공했는지 기억
-                    readerSuccessIndex = listIdx;
 
                     switch (dlCardReaderProtocolRes) {
                         case SCARD_PROTOCOL_T0:
