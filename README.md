@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/github/rkdmf0000/scard_lock.svg)](https://wakatime.com/badge/github/rkdmf0000/scard_lock)
+
 개노잼 노라라
 
 실행파일 최초 실행시

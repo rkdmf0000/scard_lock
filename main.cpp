@@ -257,7 +257,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
                             break;
                     };
                 } else {
-                    std::cout << "failed [1] / ";
+                    std::cout << "failed [1]" << '\n';
                 };
 
 
@@ -265,11 +265,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
             };
 
         } else {
-            std::cout << "failed [0] / ";
+            std::cout << "failed [0]" << '\n';
         };
 
 
-        std::cout << "waiting.. (" << (120-runTimeCnt) << "/120)";
+        std::cout << "waiting.. (" << (120-runTimeCnt) << "/120)" << '\n';
 
         //콘솔 크기 가져와!
         GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ww_csbi);
@@ -277,8 +277,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
         ww_rows = ww_csbi.srWindow.Bottom - ww_csbi.srWindow.Top + 1;
 
         //화면 정리
-        for(idx=0;idx<ww_rows-1;++idx)
-            std::cout << '\n';
+        //for(idx=0;idx<ww_rows-1;++idx)
+        //    std::cout << '\n';
 
 
         Sleep(1000);
