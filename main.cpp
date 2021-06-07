@@ -1,85 +1,5 @@
 #include "main.h"
 
-#ifndef FN_SLEEP
-#include <time.h>
-void FN_SLEEP(unsigned int milli_sec) {
-    clock_t start_clk = clock();
-    milli_sec--;
-    while(1) {
-      if( (clock()- start_clk) > milli_sec )
-          break;
-    };
-};
-#endif
-
-
-const DWORD getAttr(LPBYTE* txt, DWORD* size, SCARDHANDLE* handle, ULONG type) {
-    LPBYTE* ref_txt = (LPBYTE*)txt;
-    DWORD* ref_size = (DWORD*)size;
-    SCARDCONTEXT* ref_handle = (SCARDCONTEXT*)handle;
-    LONG res;
-    DWORD resultSize = SCARD_AUTOALLOCATE;
-    res = SCardGetAttrib(*ref_handle, type, (LPBYTE)ref_txt, &resultSize);
-    if (res == SCARD_S_SUCCESS) {
-        *ref_size = resultSize;
-    } else {
-        txt = nullptr;
-        *ref_size = 0;
-    };
-    return res;
-};
-
-
-void printSWForTransmitRequest(BYTE aSide, BYTE bSide) {
-    bool flag(false);
-    if (aSide == 0x6a) {
-        switch(bSide) {
-            case 0x00:
-                std::cout << "0x6a * There is notting" << '\n';
-                break;
-            case 0x80:
-                std::cout << "0x6a * Parameter error of data field" << '\n';
-                break;
-            case 0x81:
-                std::cout << "0x6a * Not supported action" << '\n';
-                break;
-            case 0x82:
-                std::cout << "0x6a * Does not exist file" << '\n';
-                break;
-            case 0x83:
-                std::cout << "0x6a * Does not exist record" << '\n';
-                break;
-            case 0x84:
-                std::cout << "0x6a * File memory dose not enough" << '\n';
-                break;
-            case 0x85:
-                std::cout << "0x6a * It is mismatch Lc to TLV Structure" << '\n';
-                break;
-            case 0x86:
-                std::cout << "0x6a * Parameter1 , Parameter2 Internal error" << '\n';
-                break;
-            case 0x87:
-                std::cout << "0x6a * Parameter1, Parameter2, they are mismatch of Lc" << '\n';
-                break;
-            case 0x88:
-                std::cout << "0x6a * Reference data cannot found" << '\n';
-                break;
-            default:
-                std::cout << "*Undefined `0x6a` error" << '\n';
-                break;
-        };
-        flag = true;
-    };
-
-    if (!flag)
-        std::cout << "-- Undefined Case in " << aSide << ", " << bSide << '\n';
-
-};
-
-
-
-
-
 
 void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
 
@@ -146,7 +66,7 @@ void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
         t.dwProtocol = SCARD_PROTOCOL_T0;
         t.cbPciLength = sizeof(t);
         Res = SCardTransmit(hSCardConnect, &t,SendBuffer, SendSize,nullptr,ReceiveBuffer, &ReceiveSize);
-        std::cout << (int)Res << ", debug : ";
+        std::cout << Res << ", debug : ";
         for(idx=0; idx<ReceiveSize; ++idx)
             std::cout << std::hex <<  (int)(unsigned char)ReceiveBuffer[idx] << std::dec << " ";
         std::cout << "[SIZE:" << ReceiveSize << ']';
@@ -168,7 +88,7 @@ void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
         t.dwProtocol = SCARD_PROTOCOL_T0;
         t.cbPciLength = sizeof(t);
         Res = SCardTransmit(hSCardConnect, &t,SendBuffer, SendSize,nullptr,ReceiveBuffer, &ReceiveSize);
-        std::cout << (int)Res << ", debug : ";
+        std::cout << Res << ", debug : ";
         for(idx=0; idx<ReceiveSize; ++idx)
             std::cout << std::hex <<  (int)(unsigned char)ReceiveBuffer[idx] << std::dec << " ";
         std::cout << "[SIZE:" << ReceiveSize << ']';
@@ -206,8 +126,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
 
+    CONSOLE_SCREEN_BUFFER_INFO ww_csbi;
+    int ww_columns, ww_rows;
+
     //loop card discern
     long long runTimeCnt(0);
+
+    //dummy count
+    unsigned int idx(0);
 
     //card reader system name list
     char _initReaderListFileName[] = "_reader_name.txt";
@@ -261,7 +187,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
     while(true) {
 
         //미관상 정리
-        std::cout << std::endl << std::endl;
+        //std::cout << std::endl << std::endl;
 
         ++runTimeCnt;
 
@@ -328,7 +254,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
                             break;
                     };
                 } else {
-                    std::cout << "failed [1]" << '\n';
+                    std::cout << "failed [1] / ";
                 };
 
 
@@ -336,18 +262,26 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
             };
 
         } else {
-            std::cout << "failed [0]" << '\n';
+            std::cout << "failed [0] / ";
         };
 
 
-        std::cout << "waiting.." << '\n';
+        std::cout << "waiting.. (" << (120-runTimeCnt) << "/120)";
+
+        //콘솔 크기 가져와!
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ww_csbi);
+        ww_columns = ww_csbi.srWindow.Right - ww_csbi.srWindow.Left + 1;
+        ww_rows = ww_csbi.srWindow.Bottom - ww_csbi.srWindow.Top + 1;
+
+        //화면 정리
+        for(idx=0;idx<ww_rows-1;++idx)
+            std::cout << '\n';
 
 
-        //FN_SLEEP(2000);
-        Sleep(2525);
+        Sleep(1000);
 
         //exit condition
-        if (runTimeCnt == 100000000)
+        if (runTimeCnt == 120)
             break;
     };
 

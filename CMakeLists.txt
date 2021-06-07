@@ -14,4 +14,4 @@ link_libraries( winscard )
 set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 ${CMAKE_CSS_STANDARD_LIBRARIES}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
 
-add_executable(scard_lock WIN32 main.h main.cpp)
+add_executable(scard_lock WIN32 main_include.h main_fn.h main.h main_fn.cpp main.cpp )

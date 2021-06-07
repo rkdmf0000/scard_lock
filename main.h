@@ -7,12 +7,10 @@
 
 //#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <windows.h>
-#include <winscard.h>
 
+#include "main_include.h"
+
+#include "main_fn.h"
 
 
 //####################################################
