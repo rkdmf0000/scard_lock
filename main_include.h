@@ -9,6 +9,8 @@
 #include <vector>
 #include <time.h>
 
+#include <thread>
+
 #include <windows.h>
 #include <winscard.h>
 #endif //MAIN_CPP_MAIN_INCLUDE_H

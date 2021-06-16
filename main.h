@@ -2,6 +2,7 @@
 // Created by my_fl on 2021-06-07.
 //
 
+
 #ifndef SCARD_LOCK_MAIN_H
 #define SCARD_LOCK_MAIN_H
 
@@ -11,7 +12,7 @@
 #include "main_include.h"
 
 #include "main_fn.h"
-
+#include "main_draws.h"
 
 //####################################################
 // 금융 공동망 정의

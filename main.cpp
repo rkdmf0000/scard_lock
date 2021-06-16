@@ -109,7 +109,7 @@ void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
 
 
     //순전히 디버그용
-    system("PAUSE");
+    //system("PAUSE");
 
     exit(0);
 };
@@ -118,17 +118,7 @@ void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
 
 
 
-
-
-
-
-
-
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLine, int nShowCmd) {
-
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-
+void cardReaderFn() {
     CONSOLE_SCREEN_BUFFER_INFO ww_csbi;
     int ww_columns, ww_rows;
 
@@ -221,12 +211,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
                 switch(lSCardConnectionRes) {
                     case SCARD_S_SUCCESS:
                     case SCARD_W_REMOVED_CARD:
-                        {
-                            if (readerSuccessIndex == -1)
-                                std::cout << "[ Spotted available reader and will be iteration pass by ]" << '\n';
+                    {
+                        if (readerSuccessIndex == -1)
+                            std::cout << "[ Spotted available reader and will be iteration pass by ]" << '\n';
 
-                            readerSuccessIndex = listIdx;
-                        }
+                        readerSuccessIndex = listIdx;
+                    }
                         break;
                     case SCARD_W_UNRESPONSIVE_CARD:
                         std::cout << "[ This smart card doesn't initialization proceed. Please make sure your card direction! ]" << '\n';
@@ -288,5 +278,51 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
             break;
     };
 
+};
+
+
+
+
+
+
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLine, int nShowCmd) {
+
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+
+    WNDCLASS scardLockWNDClass;
+    main_draws::errChkOfClassRegisterInit( main_draws::initRegister(hInstance, scardLockWNDClass) );
+
+
+    HWND scardClockWindowHandle;
+    scardClockWindowHandle = CreateWindowExA(0, MAIN_CPP_MAIN_DRAWS_CLASSNAME, "hello", 0, 0, 0, 250, 250, nullptr, nullptr, hInstance, 0);
+
+    if (!scardClockWindowHandle) {
+        std::cout << "naga die" << '\n';
+    } else {
+        std::cout << "naga live" << '\n';
+    };
+
+
+    //ShowWindow(scardClockWindowHandle, SW_SHOW);
+    ShowWindow(scardClockWindowHandle, SW_HIDE);
+    UpdateWindow(scardClockWindowHandle);
+
+    MSG msg = {};
+    while (1)
+    {
+        if (PeekMessage(&msg, scardClockWindowHandle, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT) break;
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        } else {
+            // 메세지가 없이 들어온다 쓸 생각하지 마라
+            // 여긴 오로지 그리는데 사용될 예정.
+            SendMessage(scardClockWindowHandle, WM_PAINT, 0, 0);
+        };
+    };
+
+    system("PAUSE");
     return 0;
 };
