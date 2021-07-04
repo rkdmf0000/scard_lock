@@ -5,7 +5,7 @@
 #include "main_scard_fn.h"
 
 
-void main_scard_fn::FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
+void main_scard_fn::FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect, unsigned char* ref_serialByte) {
 
     DWORD _res(0);
     LPBYTE _readerSystemName;
@@ -76,7 +76,7 @@ void main_scard_fn::FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
         std::cout << std::endl;
         if (ReceiveSize == 2)
             printSWForTransmitRequest(ReceiveBuffer[0], ReceiveBuffer[1]);
-    };
+    }
 
     {
         std::cout << "##########################" << '\n';
@@ -98,7 +98,21 @@ void main_scard_fn::FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
         std::cout << std::endl;
         if (ReceiveSize == 2)
             printSWForTransmitRequest(ReceiveBuffer[0], ReceiveBuffer[1]);
-    };
+
+        if (ReceiveSize == 10) {
+            ref_serialByte[0] = ReceiveBuffer[0];
+            ref_serialByte[1] = ReceiveBuffer[1];
+            ref_serialByte[2] = ReceiveBuffer[2];
+            ref_serialByte[3] = ReceiveBuffer[3];
+            ref_serialByte[4] = ReceiveBuffer[4];
+            ref_serialByte[5] = ReceiveBuffer[5];
+            ref_serialByte[6] = ReceiveBuffer[6];
+            ref_serialByte[7] = ReceiveBuffer[7];
+        } else {
+            ref_serialByte = {0};
+        }
+
+    }
 
     //##############################
     //##############################
@@ -110,7 +124,7 @@ void main_scard_fn::FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect) {
 
 
 
-int main_scard_fn::cardReaderFn() {
+int main_scard_fn::cardReaderFn(unsigned char* ref_serialByte) {
 
     //loop card discern
     long long runTimeCnt(0);
@@ -120,7 +134,6 @@ int main_scard_fn::cardReaderFn() {
 
     //card reader system name list
     char _initReaderListFileName[] = "_reader_name.txt";
-
 
     //init reader list file
     std::ifstream readerList(_initReaderListFileName);
@@ -151,7 +164,7 @@ int main_scard_fn::cardReaderFn() {
         vtReaderList.push_back(readerItemLine);
     };
 
-    FN_SLEEP(1000);
+    //FN_SLEEP(1000);
 
     int readerSuccessIndex(-1);
 
@@ -223,7 +236,7 @@ int main_scard_fn::cardReaderFn() {
                     switch (dlCardReaderProtocolRes) {
                         case SCARD_PROTOCOL_T0:
                             std::cout << "[protocol t0]" << '\n';
-                            FnT0Action(hSC, hSCardConnect);
+                            FnT0Action(hSC, hSCardConnect, ref_serialByte);
                             return 1;
                             break;
                         case SCARD_PROTOCOL_T1:

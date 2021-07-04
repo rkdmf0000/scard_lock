@@ -61,9 +61,9 @@
 
 class main_scard_fn {
 private:
-    static void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect);
+    static void FnT0Action(SCARDCONTEXT& hSC, SCARDHANDLE& hSCardConnect, unsigned char* ref_serialByte);
 public:
-    static int cardReaderFn();
+    static int cardReaderFn(unsigned char* ref_serialByte);
 };
 
 

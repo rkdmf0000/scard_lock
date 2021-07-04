@@ -30,13 +30,40 @@ void draw_check_scard(HDC hDC, RECT size){
 };
 
 void draw_check_success(HDC hDC, RECT size){
-
+    RECT tDraw_test{0,0,size.top, size.bottom};
+    DrawTextA(hDC, "SUCCESS", -1, &tDraw_test, DT_TOP|DT_LEFT|DT_NOCLIP);
 };
 
 void draw_check_failed_tryout(HDC hDC, RECT size){
-
+    RECT tDraw_test{0,0,size.top, size.bottom};
+    DrawTextA(hDC, "FAILED_TRY_OUT", -1, &tDraw_test, DT_TOP|DT_LEFT|DT_NOCLIP);
 };
 
+void draw_check_failed_scan(HDC hDC, RECT size) {
+    RECT tDraw_test{0,0,size.top, size.bottom};
+    DrawTextA(hDC, "FAILED_SCAN", -1, &tDraw_test, DT_TOP|DT_LEFT|DT_NOCLIP);
+};
+
+
+
+
+void runScardReader(unsigned char* ref_serialByte){
+    main_scard_fn::cardReaderFn(ref_serialByte);
+    std::cout << "Card serial number : ";
+    for(int idxz = 0; idxz < 8; ++idxz)
+        std::cout << std::hex << (int)ref_serialByte[idxz] << std::dec;
+    std::cout << std::endl;
+}
+
+bool checkResultOfScardReaderFn(unsigned char copied_serialByte[8]){
+    unsigned int i(0), x(0);
+    for ( i=0;i<8;++i )
+        if (copied_serialByte[i] == 0)
+            ++x;
+    if (x == 8)
+        return false;
+    else return true;
+};
 
 //main_scard_fn
 
@@ -86,13 +113,27 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
             scene.addStage((unsigned char*)"check_scard", 12, draw_check_scard, virtualDrawArea);
             scene.addStage((unsigned char*)"check_success", 14, draw_check_success, virtualDrawArea);
             scene.addStage((unsigned char*)"check_failed_tryout", 20, draw_check_failed_tryout, virtualDrawArea);
+            scene.addStage((unsigned char*)"check_failed_scan", 18, draw_check_failed_scan, virtualDrawArea);
             scene.addStage((unsigned char*)"alert", 6, draw_alert, virtualDrawArea);
 
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             SetTimer(hWnd, main_draws_timeRefreshEvent, 1000, nullptr);
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             SetTimer(hWnd, main_draws_cardCheckRepeater, 20000, nullptr);
-            main_scard_fn::cardReaderFn();
+            {
+                unsigned char csn[8]{0};
+                runScardReader(csn);
+                main_activity scene;
+                scene.sync();
+                if (checkResultOfScardReaderFn(csn)) {
+                    std::cout << "is completed with process" << '\n';
+                    scene.selectStage((unsigned char*)"check_success");
+                } else {
+                    std::cout << "failed!" << '\n';
+                    scene.selectStage((unsigned char*)"check_failed_scan");
+                }
+            }
+
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             break;
 
@@ -107,8 +148,17 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
                     break;
                 case main_draws_cardCheckRepeater:
                 {
-                    std::cout << "Run loop of card checking" << '\n';
-                    main_scard_fn::cardReaderFn();
+                    unsigned char csn[8]{0};
+                    runScardReader(csn);
+                    main_activity scene;
+                    scene.sync();
+                    if (checkResultOfScardReaderFn(csn)) {
+                        std::cout << "is completed with process" << '\n';
+                        scene.selectStage((unsigned char*)"check_success");
+                    } else {
+                        std::cout << "failed!" << '\n';
+                        scene.selectStage((unsigned char*)"check_failed_scan");
+                    }
                 }
                 break;
             }
@@ -119,11 +169,41 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
             //main_draws::eventOnPaint(hWnd);
             main_draws::eventOnPaintAtDesktop(windowHWND, windowHDC, &virtualDrawArea);
             break;
+
+        case WM_APPCOMMAND:
+            std::cout << "WM_APPCOMMAND" << '\n';
+            break;
+
+        case WM_ACTIVATE:
+            std::cout << "WM_ACTIVATE" << '\n';
+            break;
+
+        case WM_HOTKEY:
+            std::cout << "WM_HOTKEY" << '\n';
+            break;
+
+        case WM_DEADCHAR:
+            std::cout << "WM_DEADCHAR" << '\n';
+            break;
+
+            case WM_SYSKEYDOWN:
+        case WM_CHAR:
+            std::cout << "char triggered" << '\n';
+            break;
+
+
+        case WM_NCDESTROY:
+            MessageBox(NULL,(LPCSTR)L"WM_NCDESTROY",(LPCSTR)L"Debug alert",MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2);
+            break;
+        case WM_CLOSE:
+            MessageBox(NULL,(LPCSTR)L"WM_CLOSE",(LPCSTR)L"Debug alert",MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2);
+            break;
         case WM_DESTROY:
+            MessageBox(NULL,(LPCSTR)L"WM_DESTROY",(LPCSTR)L"Debug alert",MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2);
             PostQuitMessage(0);
             break;
         case WM_QUIT:
-            MessageBox(NULL,(LPCSTR)L"quited",(LPCSTR)L"Debug alert",MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2);
+            MessageBox(NULL,(LPCSTR)L"WM_QUIT",(LPCSTR)L"Debug alert",MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2);
             break;
 
 
