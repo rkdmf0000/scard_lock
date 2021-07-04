@@ -6,6 +6,8 @@
 #define MAIN_CPP_MAIN_DRAWS_H
 
 #include "main_include.h"
+#include "main_scard_fn.h"
+
 
 #ifndef MAIN_CPP_MAIN_DRAWS_CLASSNAME
 #define MAIN_CPP_MAIN_DRAWS_CLASSNAME "scard_lock_application"
@@ -14,6 +16,7 @@
 #ifndef MAIN_CPP_MAIN_DRAWS_EVENT
 #define MAIN_CPP_MAIN_DRAWS_EVENT
 #define main_draws_timeRefreshEvent 1
+#define main_draws_cardCheckRepeater 2
 #endif
 
 #ifndef MAIN_CPP_MAIN_DRAWS_SETS

@@ -13,4 +13,8 @@
 
 #include <windows.h>
 #include <winscard.h>
+
+#include "main_activity.h"
+
+
 #endif //MAIN_CPP_MAIN_INCLUDE_H

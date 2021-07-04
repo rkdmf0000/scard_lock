@@ -16,6 +16,11 @@ set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lw
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
 
 set(SOURCE_FILES
+        main_scard_fn.h
+        main_scard_fn.cpp
+        main_activity_type.h
+        main_activity.h
+        main_activity.cpp
         main_draws.h
         main_draws.cpp
         main_include.h
