@@ -36,7 +36,7 @@ class main_draws {
 
 public:
     static LRESULT CALLBACK _wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+    static LRESULT CALLBACK _keyboardProc(INT nCode, WPARAM wParam, LPARAM lParam);
 
     static void eventOnPaint(HWND hWnd);
     static void onDraw(HWND hWnd, PAINTSTRUCT* ps);
@@ -47,6 +47,9 @@ public:
     static ATOM initRegister(HINSTANCE& handle, WNDCLASSA& strcut);
     static void errChkOfClassRegisterInit(const ATOM result);
 
+private:
+    static HINSTANCE* hInstance;
+    static HHOOK keyboardHooked;
 
 };
 

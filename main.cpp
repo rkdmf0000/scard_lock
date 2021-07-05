@@ -10,7 +10,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLi
     WNDCLASS scardLockWNDClass;
     main_draws::errChkOfClassRegisterInit( main_draws::initRegister(hInstance, scardLockWNDClass) );
 
-
     HWND scardClockWindowHandle;
     scardClockWindowHandle = CreateWindowExA(0, MAIN_CPP_MAIN_DRAWS_CLASSNAME, "hello", 0, 0, 0, 250, 250, nullptr, nullptr, hInstance, 0);
 

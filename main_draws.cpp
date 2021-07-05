@@ -4,7 +4,8 @@
 
 #include "main_draws.h"
 
-
+HINSTANCE* main_draws::hInstance = nullptr;
+HHOOK main_draws::keyboardHooked = nullptr;
 
 void draw_default(HDC hDC, RECT size){
     //카드를 읽는 중에는 아무것도 그리지 않음
@@ -65,6 +66,17 @@ bool checkResultOfScardReaderFn(unsigned char copied_serialByte[8]){
     else return true;
 };
 
+
+void keyboardHookingRefresh(HINSTANCE hinstance, HHOOK* keyboardHook) {
+    std::cout << "keyboard hook refreshing.." << '\n';
+    if (*keyboardHook != nullptr)
+        UnhookWindowsHookEx(*keyboardHook);
+    *keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)&main_draws::_keyboardProc, hinstance, 0);
+    if (*keyboardHook == nullptr)
+        std::cout << "Hooking Error" << std::endl;
+};
+
+
 //main_scard_fn
 
 
@@ -81,6 +93,9 @@ ATOM main_draws::initRegister(HINSTANCE& handle, WNDCLASSA &strcut) {
     strcut.style            = CS_GLOBALCLASS; //CS_VREDRAW | CS_DROPSHADOW | CS_NOCLOSE
     strcut.lpszClassName    = (LPCSTR)MAIN_CPP_MAIN_DRAWS_CLASSNAME; //23-byte
     strcut.lpszMenuName     = 0;
+
+    main_draws::hInstance = &handle;
+
     return RegisterClassA(&strcut);
 }
 
@@ -93,7 +108,9 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
     static HDC windowHDC;
     static HANDLE hTimerPerASec;
     static RECT virtualDrawArea;
+
     main_activity scene;
+
 
 
     switch(uMsg) {
@@ -133,13 +150,10 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
                     scene.selectStage((unsigned char*)"check_failed_scan");
                 }
             }
-
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            keyboardHookingRefresh(*main_draws::hInstance, &main_draws::keyboardHooked);
             break;
 
-        case WM_KEYDOWN:
-            std::cout << "test key down!" << '\n';
-        break;
 
         case WM_TIMER:
             switch (wParam) {
@@ -159,6 +173,7 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
                         std::cout << "failed!" << '\n';
                         scene.selectStage((unsigned char*)"check_failed_scan");
                     }
+                    keyboardHookingRefresh(*main_draws::hInstance, &main_draws::keyboardHooked);
                 }
                 break;
             }
@@ -186,11 +201,18 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
             std::cout << "WM_DEADCHAR" << '\n';
             break;
 
-            case WM_SYSKEYDOWN:
+        case WM_SYSKEYDOWN:
         case WM_CHAR:
             std::cout << "char triggered" << '\n';
             break;
 
+        case WM_KEYUP:
+            std::cout << "test key up!" << wParam << " * " << lParam << '\n';
+            break;
+
+        case WM_KEYDOWN:
+            std::cout << "test key down!" << wParam << " * " << lParam << '\n';
+            break;
 
         case WM_NCDESTROY:
             MessageBox(NULL,(LPCSTR)L"WM_NCDESTROY",(LPCSTR)L"Debug alert",MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2);
@@ -270,7 +292,16 @@ void main_draws::onDrawAtDesktop(HWND hWnd, HDC hDC, RECT* size) {
     scene.sync();
     scene.currentStageCallback(&caller);
     caller(hDC, *size);
-};
+}
+
+LRESULT CALLBACK main_draws::_keyboardProc(INT nCode, WPARAM wParam, LPARAM lParam) {
+    KBDLLHOOKSTRUCT* ABoutKeyboard = (KBDLLHOOKSTRUCT*)lParam;
+
+    std::cout << "Recieved key" << ABoutKeyboard->vkCode << std::endl;
+
+    return CallNextHookEx ( main_draws::keyboardHooked, nCode , wParam, lParam );
+}
+
 
 
 
