@@ -76,6 +76,136 @@ void keyboardHookingRefresh(HINSTANCE hinstance, HHOOK* keyboardHook) {
         std::cout << "Hooking Error" << std::endl;
 };
 
+bool registerSerialChecker(const char a[8], const char b[8]) {
+    unsigned idx(0);
+    for (idx=0;idx<8;++idx) {
+        if (a[idx] != b[idx])
+            return false;
+    }
+    return true;
+}
+
+void registerPutValueReadyStat(const bool stat) {
+    HKEY handle;
+    LONG res;
+    DWORD value = (DWORD)stat;
+
+    res = RegOpenKeyEx(
+            HKEY_CURRENT_USER,
+            nullptr,
+            0, KEY_ALL_ACCESS,
+            &handle);
+
+    if (res != ERROR_SUCCESS) {
+        std::cout << "register open3 failed" << '\n';
+    }
+
+    res = RegSetValueEx(handle, "ScardLock_ed", 0, REG_DWORD, (LPBYTE)&value, sizeof(value));
+    std::cout << "stat saved" << '\n';
+
+    if (res != ERROR_SUCCESS) {
+        std::cout << "register set value3 failed" << '\n';
+    }
+
+    RegCloseKey(handle);
+};
+
+void registerPutValueSerial(const unsigned char serial[8]) {
+    HKEY handle;
+    LONG res;
+
+    res = RegOpenKeyEx(
+            HKEY_CURRENT_USER,
+            nullptr,
+            0, KEY_ALL_ACCESS,
+            &handle);
+
+    if (res != ERROR_SUCCESS) {
+        std::cout << "register open1 failed" << '\n';
+    }
+
+    res = RegSetValueEx(handle, "ScardLock_serial", 0, REG_SZ, (LPBYTE)serial, 8);
+    std::cout << "serial saved" << '\n';
+
+    if (res != ERROR_SUCCESS) {
+        std::cout << "register set value1 failed" << '\n';
+    }
+
+    RegCloseKey(handle);
+};
+
+bool registerGetReadyStat() {
+    HKEY handle;
+    LONG res;
+    DWORD buffer;
+    res = RegOpenKeyEx(
+            HKEY_CURRENT_USER,
+            nullptr,
+            0, KEY_ALL_ACCESS,
+            &handle);
+
+    if (res != ERROR_SUCCESS)
+        std::cout << "register open4 failed" << '\n';
+
+    DWORD type;
+    DWORD byte = sizeof(DWORD); //8바이트 넣었는데 레지스트리에서 읽어올때 \n 까지 붙여서 오기때문에 9로 쓴다 (추측)
+    res = RegQueryValueExA(handle, "ScardLock_ed", nullptr, &type, (LPBYTE) &buffer, &byte);
+    if (res != ERROR_SUCCESS)
+        std::cout << "register query4 failed" << res << '\n';
+    RegCloseKey(handle);
+
+
+    return (buffer == 1 ? true : false);
+}
+
+void registerGetSerial(char* buffer) {
+    HKEY handle;
+    LONG res;
+
+    res = RegOpenKeyEx(
+            HKEY_CURRENT_USER,
+            nullptr,
+            0, KEY_ALL_ACCESS,
+            &handle);
+
+    if (res != ERROR_SUCCESS)
+        std::cout << "register open2 failed" << '\n';
+
+    DWORD type;
+    DWORD byte = 9; //8바이트 넣었는데 레지스트리에서 읽어올때 \n 까지 붙여서 오기때문에 9로 쓴다 (추측)
+    res = RegQueryValueExA(handle, "ScardLock_serial", nullptr, &type, (LPBYTE) buffer, &byte);
+    if (res != ERROR_SUCCESS)
+        std::cout << "register query2 failed" << res << '\n';
+
+    RegCloseKey(handle);
+}
+
+
+
+void registerRenew(UCHAR* serial) {
+
+    if (!registerGetReadyStat()) {
+        std::cout << "it is now re-set the serial" << '\n';
+        registerPutValueSerial(serial);
+        registerPutValueReadyStat(true);
+    } else {
+        std::cout << "pass the re-set" << '\n';
+    }
+
+
+    char buffer[8];
+    registerGetSerial(buffer);
+    if (registerSerialChecker((char*)serial, buffer)) {
+        std::cout << "is same" << '\n';
+    } else {
+        std::cout << "is not same" << '\n';
+    }
+    std::cout << "saved serial : " << buffer << '\n';
+
+    std::cout << serial << " x==x " << buffer << '\n';
+
+
+};
 
 //main_scard_fn
 
@@ -100,6 +230,39 @@ ATOM main_draws::initRegister(HINSTANCE& handle, WNDCLASSA &strcut) {
 }
 
 
+LRESULT CALLBACK main_draws::_keyboardProc(INT nCode, WPARAM wParam, LPARAM lParam) {
+    static bool activatedWave(false);
+    static bool activatedLCtrl(false);
+    static bool activatedLAlt(false);
+    KBDLLHOOKSTRUCT* ABoutKeyboard = (KBDLLHOOKSTRUCT*)lParam;
+    switch(wParam) {
+        case WM_KEYUP:
+            if (ABoutKeyboard->vkCode == 192)
+                activatedWave = false;
+            if (ABoutKeyboard->vkCode == 162)
+                activatedLCtrl = false;
+            if (ABoutKeyboard->vkCode == 164)
+                activatedLAlt = false;
+            break;
+        case WM_KEYDOWN:
+            if (ABoutKeyboard->vkCode == 192)
+                activatedWave = true;
+            if (ABoutKeyboard->vkCode == 162)
+                activatedLCtrl = true;
+            if (ABoutKeyboard->vkCode == 164)
+                activatedLAlt = true;
+
+            //키 조합
+            if (activatedWave && activatedLCtrl && activatedLAlt) {
+                std::cout << "CLEAR SERIAL REG" << '\n';
+                registerPutValueReadyStat(false);
+            }
+
+            break;
+    }
+    std::cout << "Recieved key : " << ABoutKeyboard->vkCode << std::endl;
+    return CallNextHookEx ( main_draws::keyboardHooked, nCode , wParam, lParam );
+}
 
 
 LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -144,6 +307,7 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
                 scene.sync();
                 if (checkResultOfScardReaderFn(csn)) {
                     std::cout << "is completed with process" << '\n';
+                    registerRenew(csn);
                     scene.selectStage((unsigned char*)"check_success");
                 } else {
                     std::cout << "failed!" << '\n';
@@ -168,6 +332,7 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
                     scene.sync();
                     if (checkResultOfScardReaderFn(csn)) {
                         std::cout << "is completed with process" << '\n';
+                        registerRenew(csn);
                         scene.selectStage((unsigned char*)"check_success");
                     } else {
                         std::cout << "failed!" << '\n';
@@ -294,13 +459,6 @@ void main_draws::onDrawAtDesktop(HWND hWnd, HDC hDC, RECT* size) {
     caller(hDC, *size);
 }
 
-LRESULT CALLBACK main_draws::_keyboardProc(INT nCode, WPARAM wParam, LPARAM lParam) {
-    KBDLLHOOKSTRUCT* ABoutKeyboard = (KBDLLHOOKSTRUCT*)lParam;
-
-    std::cout << "Recieved key" << ABoutKeyboard->vkCode << std::endl;
-
-    return CallNextHookEx ( main_draws::keyboardHooked, nCode , wParam, lParam );
-}
 
 
 
