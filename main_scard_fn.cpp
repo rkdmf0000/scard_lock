@@ -179,6 +179,9 @@ int main_scard_fn::cardReaderFn(unsigned char* ref_serialByte) {
     LONG lSCardConnectionRes;
     DWORD dlCardReaderProtocolRes;
 
+
+
+
     //run loop
     while(true) {
 
@@ -261,21 +264,20 @@ int main_scard_fn::cardReaderFn(unsigned char* ref_serialByte) {
         };
 
 
-        std::cout << "waiting.. (" << (5-runTimeCnt) << "/5)" << '\n';
 
 
         //화면 정리
         //for(idx=0;idx<ww_rows-1;++idx)
         //    std::cout << '\n';
-
+        std::cout << "*waiting.. (" << (1-runTimeCnt) << "/1)" << '\n';
 
         Sleep(1000);
 
+
+
         //exit condition
-        if (runTimeCnt == 5) {
-            main_activity scene;
-            scene.sync();
-            scene.selectStage((unsigned char*)"check_failed_tryout");
+        if (runTimeCnt == 1) {
+
             std::cout << "Try out of checking" << '\n';
             return 0;
         };

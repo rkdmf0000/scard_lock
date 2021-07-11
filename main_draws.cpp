@@ -31,21 +31,81 @@ void draw_check_scard(HDC hDC, RECT size){
 };
 
 void draw_check_success(HDC hDC, RECT size){
-    RECT tDraw_test{0,0,size.top, size.bottom};
-    DrawTextA(hDC, "SUCCESS", -1, &tDraw_test, DT_TOP|DT_LEFT|DT_NOCLIP);
+    HFONT c;
+    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    RECT tDraw_test{3, 10,300, 150};
+    SelectObject(hDC, c);
+    SetTextColor(hDC, RGB(255,255,255));
+    SetBkMode(hDC, RGB(255,0,255));
+    DrawTextA(hDC, "draw_\ncheck_\nsuccess\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
 };
 
 void draw_check_failed_tryout(HDC hDC, RECT size){
-    RECT tDraw_test{0,0,size.top, size.bottom};
-    DrawTextA(hDC, "FAILED_TRY_OUT", -1, &tDraw_test, DT_TOP|DT_LEFT|DT_NOCLIP);
+    HFONT c;
+    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    RECT tDraw_test{3, 10,300, 150};
+    SelectObject(hDC, c);
+    SetTextColor(hDC, RGB(255,255,255));
+    SetBkMode(hDC, RGB(255,0,255));
+    DrawTextA(hDC, "draw_\ncheck_\nfailed_tryout\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
 };
 
 void draw_check_failed_scan(HDC hDC, RECT size) {
-    RECT tDraw_test{0,0,size.top, size.bottom};
-    DrawTextA(hDC, "FAILED_SCAN", -1, &tDraw_test, DT_TOP|DT_LEFT|DT_NOCLIP);
+    HFONT c;
+    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    RECT tDraw_test{3, 10,290, 140};
+    SelectObject(hDC, c);
+    SetTextColor(hDC, RGB(255,255,255));
+    SetBkMode(hDC, RGB(255,0,255));
+    DrawTextA(hDC, "draw_\ncheck_\nfailed_scan\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
 };
 
+void draw_wait_for_card_scan(HDC hDC, RECT size) {
+    HFONT c;
+    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    RECT tDraw_test{3, 10,290, 140};
+    SelectObject(hDC, c);
+    SetTextColor(hDC, RGB(255,255,255));
+    SetBkMode(hDC, RGB(255,0,255));
+    DrawTextA(hDC, "draw_\nwait_\nfor_card_scan\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
+};
 
+void draw_reset_serial(HDC hDC, RECT size) {
+    HFONT c;
+    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    RECT tDraw_test{3, 10,290, 140};
+    SelectObject(hDC, c);
+    SetTextColor(hDC, RGB(255,255,255));
+    SetBkMode(hDC, RGB(255,0,255));
+    DrawTextA(hDC, "draw_\nreset_\nserial\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
+};
+
+void draw_check_register_miss_check(HDC hDC, RECT size) {
+    HFONT c;
+    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    RECT tDraw_test{3, 10,290, 140};
+    SelectObject(hDC, c);
+    SetTextColor(hDC, RGB(255,255,255));
+    SetBkMode(hDC, RGB(255,0,255));
+    DrawTextA(hDC, "draw_\ncheck_\nregister_miss_check\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
+};
+
+void draw_check_register_clear_check(HDC hDC, RECT size) {
+    HFONT c;
+    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    RECT tDraw_test{3, 10,290, 140};
+    SelectObject(hDC, c);
+    SetTextColor(hDC, RGB(255,255,255));
+    SetBkMode(hDC, RGB(255,0,255));
+    DrawTextA(hDC, "draw_\ncheck_\nregister_clear_check\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
+};
 
 
 void runScardReader(unsigned char* ref_serialByte){
@@ -191,20 +251,6 @@ void registerRenew(UCHAR* serial) {
     } else {
         std::cout << "pass the re-set" << '\n';
     }
-
-
-    char buffer[8];
-    registerGetSerial(buffer);
-    if (registerSerialChecker((char*)serial, buffer)) {
-        std::cout << "is same" << '\n';
-    } else {
-        std::cout << "is not same" << '\n';
-    }
-    std::cout << "saved serial : " << buffer << '\n';
-
-    std::cout << serial << " x==x " << buffer << '\n';
-
-
 };
 
 //main_scard_fn
@@ -254,7 +300,10 @@ LRESULT CALLBACK main_draws::_keyboardProc(INT nCode, WPARAM wParam, LPARAM lPar
 
             //키 조합
             if (activatedWave && activatedLCtrl && activatedLAlt) {
-                std::cout << "CLEAR SERIAL REG" << '\n';
+                std::cout << "- - - -CLEAR SERIAL REG" << '\n';
+                main_activity scene;
+                scene.sync();
+                scene.selectStage((unsigned char*)"reset_serial");
                 registerPutValueReadyStat(false);
             }
 
@@ -294,6 +343,10 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
             scene.addStage((unsigned char*)"check_success", 14, draw_check_success, virtualDrawArea);
             scene.addStage((unsigned char*)"check_failed_tryout", 20, draw_check_failed_tryout, virtualDrawArea);
             scene.addStage((unsigned char*)"check_failed_scan", 18, draw_check_failed_scan, virtualDrawArea);
+            scene.addStage((unsigned char*)"wait_for_card_scan", 19, draw_wait_for_card_scan, virtualDrawArea);
+            scene.addStage((unsigned char*)"reset_serial", 13, draw_reset_serial, virtualDrawArea);
+            scene.addStage((unsigned char*)"check_register_miss_check", 26, draw_check_register_miss_check, virtualDrawArea);
+            scene.addStage((unsigned char*)"check_register_clear_check", 27, draw_check_register_clear_check, virtualDrawArea);
             scene.addStage((unsigned char*)"alert", 6, draw_alert, virtualDrawArea);
 
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -307,8 +360,8 @@ LRESULT CALLBACK main_draws::_wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
                 scene.sync();
                 if (checkResultOfScardReaderFn(csn)) {
                     std::cout << "is completed with process" << '\n';
-                    registerRenew(csn);
                     scene.selectStage((unsigned char*)"check_success");
+                    registerRenew(csn);
                 } else {
                     std::cout << "failed!" << '\n';
                     scene.selectStage((unsigned char*)"check_failed_scan");
@@ -427,7 +480,7 @@ void main_draws::eventOnPaintAtDesktop(HWND hWnd, HDC hDC, RECT* size) {
     //scene.currentStageSetArea(size->left, size->right, size->top, size->bottom);
     scene.currentStage(&data);
 
-
+    InvalidateRect(hWnd, &data.rect, false);
 
     hMemDC = CreateCompatibleDC(hDC);
     bitmap = CreateCompatibleBitmap(hDC, data.rect.top, data.rect.bottom);
@@ -440,11 +493,12 @@ void main_draws::eventOnPaintAtDesktop(HWND hWnd, HDC hDC, RECT* size) {
                    hMemDC, 0, 0,  data.rect.top, data.rect.bottom,
                    RGB(255,0,255));
 
-    ValidateRect(hWnd, &data.rect);
 
     SelectObject(hMemDC, old_hMemDC);
     DeleteObject(bitmap);
     DeleteDC(hMemDC);
+
+    ValidateRect(hWnd, &data.rect);
 
     //고정 딜레이
     Sleep(1000 / 36);
