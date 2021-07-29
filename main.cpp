@@ -1,11 +1,15 @@
 #include "main.h"
-
+#include "_resource_path.h"
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hprevInstance, LPSTR lpCmdLine, int nShowCmd) {
 
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
 
+    //stack
+    HBITMAP* bit_iamge = (HBITMAP*)LoadImage(hInstance, (LPCTSTR)"./resource/test-image.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+    delete bit_iamge;
 
     WNDCLASS scardLockWNDClass;
     main_draws::errChkOfClassRegisterInit( main_draws::initRegister(hInstance, scardLockWNDClass) );

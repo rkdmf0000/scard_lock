@@ -32,13 +32,23 @@ void draw_check_scard(HDC hDC, RECT size){
 
 void draw_check_success(HDC hDC, RECT size){
     HFONT c;
-    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
+    c = CreateFont(12,4,0,0,0,0,0,0,DEFAULT_CHARSET,0,0,0,VARIABLE_PITCH|FF_ROMAN, TEXT("Lucida Sans Unicode"));
     RECT tDraw_test{3, 10,300, 150};
-    SelectObject(hDC, c);
+    (HFONT)SelectObject(hDC, c);
+
     SetTextColor(hDC, RGB(255,255,255));
     SetBkMode(hDC, RGB(255,0,255));
+    //SetBkMode(hDC, TRANSPARENT);
     DrawTextA(hDC, "draw_\ncheck_\nsuccess\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
+
+
+
+
+    //DrawText(DeskDC, "Your text here", -1, &rc, DT_CENTER | DT_VCENTER | DT_EXPANDTABS);
+
+
+
+
 };
 
 void draw_check_failed_tryout(HDC hDC, RECT size){
@@ -54,13 +64,13 @@ void draw_check_failed_tryout(HDC hDC, RECT size){
 
 void draw_check_failed_scan(HDC hDC, RECT size) {
     HFONT c;
-    c = CreateFont(26,4,0,0,0,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                   CLIP_DEFAULT_PRECIS,PROOF_QUALITY, CLEARTYPE_QUALITY,TEXT("Arial"));
-    RECT tDraw_test{3, 10,290, 140};
+    c = CreateFont(12,4,0,0,0,0,0,0,DEFAULT_CHARSET,0,0,0,VARIABLE_PITCH|FF_ROMAN, TEXT("Lucida Sans Unicode"));
+    RECT tDraw_test{3, 10,100, 70};
     SelectObject(hDC, c);
     SetTextColor(hDC, RGB(255,255,255));
     SetBkMode(hDC, RGB(255,0,255));
-    DrawTextA(hDC, "draw_\ncheck_\nfailed_scan\0", -1, &tDraw_test, DT_LEFT|DT_TOP|DT_WORDBREAK);
+    DrawTextA(hDC, "dr222aw_\ncheck_\nfailed_scan\0", -1, &tDraw_test, DT_LEFT|DT_TOP);
+
 };
 
 void draw_wait_for_card_scan(HDC hDC, RECT size) {
