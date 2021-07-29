@@ -1,5 +1,25 @@
 [![wakatime](https://wakatime.com/badge/github/rkdmf0000/scard_lock.svg)](https://wakatime.com/badge/github/rkdmf0000/scard_lock)
 
+
+07.29.2021
+
+데스크탑에선 글자가 아무리 해도 꺠지니 그냥 이미지를 로드해서 쓰기로 함
+
+각종 예제를 봤는데 방식이 같음
+
+결과물을 보면 다를게 없음
+
+다른 예제를 보거나
+
+현 윈도우에선 좀 더 방식이 까다로워진듯 함
+
+ㅂㄷㅂㄷ
+
+내일 금요일임
+
+야호
+
+
 개노잼 노라라
 
 실행파일 최초 실행시
