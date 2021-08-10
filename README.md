@@ -1,5 +1,11 @@
 [![wakatime](https://wakatime.com/badge/github/rkdmf0000/scard_lock.svg)](https://wakatime.com/badge/github/rkdmf0000/scard_lock)
 
+08.11.2021
+
+글자 깨지는 이유 찾아서 잘 고침
+
+근디 잠시 안드로이드 하러 감 
+
 
 07.29.2021
 
