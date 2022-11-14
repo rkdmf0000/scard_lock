@@ -8,6 +8,7 @@ link_directories( "./inc_lib" )
 
 #include_directories( "A:/mingw_w64/mingw32/i686-w64-mingw32/include" )
 #link_directories( "C:/Program Files%20(x86)/Windows Kits/10/Lib/10.0.18362.0/um/x64" )
+
 link_libraries( winscard )
 
 link_libraries( Msimg32 ) #dependencies : TransparentBlt
