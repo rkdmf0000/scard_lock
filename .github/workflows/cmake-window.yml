@@ -35,11 +35,19 @@ jobs:
         # uses: ashutoshvarma/action-cmake-build@0fbeeac8b1f9c8aef99e9eae9d78529ed3b0364b
       uses: ashutoshvarma/action-cmake-build@v1
       with:
-        # Build directory where build files will be generated
-        build-dir: ${{ runner.workspace }}/build
-        # CMake build type (Release, Debug, MinSizeRel, RelWithDebInfo)
-        build-type: Release
-
+          build-dir: ${{ runner.workspace }}/build
+          # will set the CC & CXX for cmake
+          cc: gcc
+          cxx: g++
+          build-type: Release
+          # Extra options pass to cmake while configuring project
+          configure-options: -DCMAKE_C_FLAGS=-w32 -DPNG_INCLUDE=OFF
+          run-test: true
+          ctest-options: -R mytest
+          # install the build using cmake --install
+          install-build: true
+          # run build using '-j [parallel]' to use multiple threads to build
+          parallel: 14
 
 
 
