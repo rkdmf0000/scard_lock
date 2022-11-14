@@ -25,13 +25,22 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    #- name: Build
+    #  # Build your program with the given configuration
+    #  run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    # - name: Test
-      # working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      # run: ctest -C ${{env.BUILD_TYPE}}
+
+    - name: Build CMake
+        # You may pin to the exact commit or the version.
+        # uses: ashutoshvarma/action-cmake-build@0fbeeac8b1f9c8aef99e9eae9d78529ed3b0364b
+      uses: ashutoshvarma/action-cmake-build@v1
+      with:
+        # Build directory where build files will be generated
+        build-dir: ${{ runner.workspace }}/build
+        # CMake build type (Release, Debug, MinSizeRel, RelWithDebInfo)
+        build-type: Release
+
+
+
+
 
